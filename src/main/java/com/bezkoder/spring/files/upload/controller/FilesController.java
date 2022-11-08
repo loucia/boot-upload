@@ -1,8 +1,12 @@
 package com.bezkoder.spring.files.upload.controller;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +22,7 @@ import com.bezkoder.spring.files.upload.model.FileInfo;
 import com.bezkoder.spring.files.upload.service.FilesStorageService;
 
 @Controller
-@CrossOrigin("https://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 public class FilesController {
 
   @Autowired
@@ -38,6 +42,7 @@ public class FilesController {
     }
   }
 
+  @CrossOrigin(origins = "https://localhost:4200")
   @GetMapping("/files")
   public ResponseEntity<List<FileInfo>> getListFiles() {
     List<FileInfo> fileInfos = storageService.loadAll().map(path -> {
@@ -51,11 +56,28 @@ public class FilesController {
     return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
   }
 
-  @GetMapping("/files/{filename:.+}")
+ /* @GetMapping("/files/{filename:.+}")
   public ResponseEntity<Resource> getFile(@PathVariable String filename) {
     Resource file = storageService.load(filename);
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+  }*/
+
+  @GetMapping("/file/{filename:.+}")
+  public ResponseEntity<JSONObject> getFileJson(@PathVariable String filename) {
+    Resource file = storageService.load(filename);
+
+    JSONParser parser = null;
+    JSONObject jsonObject  = null;
+    try {
+      parser = new JSONParser(file.getInputStream());
+
+      Object obj = parser.parse();
+      jsonObject = (JSONObject)obj;
+    } catch (Exception e) {
+
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(jsonObject);
   }
 
   @DeleteMapping("/delete/{filename:.+}")
