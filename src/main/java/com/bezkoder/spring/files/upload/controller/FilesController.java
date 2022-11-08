@@ -64,20 +64,21 @@ public class FilesController {
   }
 
   @GetMapping("/fileJson/{filename:.+}")
-  public ResponseEntity<JSONObject> getFileJson(@PathVariable String filename) {
+  public ResponseEntity<Object> getFileJson(@PathVariable String filename) {
     Resource file = storageService.load(filename);
 
     JSONParser parser = null;
     JSONObject jsonObject  = null;
+    Object obj = null;
     try {
       parser = new JSONParser(file.getInputStream());
 
-      Object obj = parser.parse();
+      obj = parser.parse();
       jsonObject = (JSONObject)obj;
     } catch (Exception e) {
-
+      e.printStackTrace();
     }
-    return ResponseEntity.status(HttpStatus.OK).body(jsonObject);
+    return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(obj));
   }
 
   @DeleteMapping("/delete/{filename:.+}")
