@@ -56,14 +56,14 @@ public class FilesController {
     return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
   }
 
- /* @GetMapping("/files/{filename:.+}")
+  @GetMapping("/files/{filename:.+}")
   public ResponseEntity<Resource> getFile(@PathVariable String filename) {
     Resource file = storageService.load(filename);
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-  }*/
+  }
 
-  @GetMapping("/file/{filename:.+}")
+  @GetMapping("/fileJson/{filename:.+}")
   public ResponseEntity<JSONObject> getFileJson(@PathVariable String filename) {
     Resource file = storageService.load(filename);
 
